@@ -14,7 +14,7 @@ telegrust-histo
 ```
 
 
-![](https://raw.githubusercontent.com/urbanij/telegrust-histo/master/histogram.png)
+![](https://raw.githubusercontent.com/urbanij/telegrust-histo/727c6d17f231f0542b9112ba2d6e5c43721d952d/histogram.svg?token=AELENNCBPCIJAM5T2WKAYCTAAS4NE)
 
 #### Demo:
 
