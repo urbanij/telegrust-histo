@@ -2,10 +2,6 @@
  * author(s):   @urbanij
  * date:        Sun 17 Jan 2021 23:06:12 CET
  *
- * description: Generate a messages-density histogram of your exported Telegram chat.
- *              └── why? I was curious, and Python was too slow(*) at parsing timestamps and so on.
- *
- *                    (*) 0.23 seconds vs 30 seconds benchmarked on the same ~45k messages dataset.
  */
 
  
@@ -28,8 +24,10 @@ use argparse::{ArgumentParser, StoreTrue, Store};
 
 
 fn generate_plot(data: &Vec<f64>, num_bins: usize, verbose: bool) {
-    let h = Histogram::from_slice(&data, HistogramBins::Count(num_bins))
-        .style(&BoxStyle::new().fill("burlywood"));
+    let h = Histogram::from_slice(
+                            &data, 
+                            HistogramBins::Count(num_bins))
+                                .style(&BoxStyle::new().fill("burlywood"));
 
     let v = ContinuousView::new().add(h);
 
@@ -37,7 +35,7 @@ fn generate_plot(data: &Vec<f64>, num_bins: usize, verbose: bool) {
     Page::single(&v).save(FILE_NAME).expect("saving svg");
 
     if verbose {
-        println!("Generated {} with {} bins in the current folder.", FILE_NAME, num_bins);
+        println!("Generated {} (using {} bins) in the current folder.", FILE_NAME, num_bins);
     }
 }
 
@@ -66,22 +64,23 @@ fn main() {
 
     let mut verbose = false;
     let mut num_bins = 200;
+    
     {  // this block limits scope of borrows by ap.refer() method
         let mut ap = ArgumentParser::new();
         ap.set_description("[telegrust-histo](https://github.com/urbanij/telegrust-histo)");
         ap.refer(&mut verbose)
             .add_option(&["-v", "--verbose"], 
-            StoreTrue,
-            "Be verbose");
+                        StoreTrue,
+                        "Be verbose");
         ap.refer(&mut num_bins)
             .add_option(&["-b"], 
-            Store,
-            "num_bins in your histogram");
+                        Store,
+                        "num_bins in your histogram");
         ap.parse_args_or_exit();
     }
         
     let regex_date_pattern = Regex::new(r"(\d{2}.\d{2}.\d{4} \d{2}:\d{2}:\d{2})").unwrap();
-                                    // matches timestamps of this kidn: 13.12.2018 19:17:39
+                                    // matches timestamps of this kind: 13.12.2018 19:17:39
     
     let mut timestamps = vec![];
 
@@ -90,7 +89,7 @@ fn main() {
     let mut i = 1;
     while let Ok(content) = read_file( format!("messages{}.html", i).as_str() ) {
         if verbose {
-            println!("Processing {}", format!("messages{}.html", i));
+            println!("Processing messages{}.html", i);
         }
 
         for caps in regex_date_pattern.captures_iter(content.as_str()) {
