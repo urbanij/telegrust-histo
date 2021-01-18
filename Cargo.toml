@@ -10,8 +10,9 @@ homepage = "https://github.com/urbanij/telegrust-histo/"
 documentation = "https://github.com/urbanij/telegrust-histo/"
 repository = "https://github.com/urbanij/telegrust-histo/"
 # readme = 
-keywords = "telegram"
+keywords = ["telegram", "telegram-export", "telegram-histogram"]
 # categories = 
+# include = ["src/", "README.md"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
