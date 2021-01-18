@@ -21,3 +21,8 @@ chrono    = "0.4.19"
 plotlib   = "0.5.1"
 regex     = "1.4.3"
 argparse  = "0.2.2"
+
+[package]
+exclude = [
+  "*.svg",
+]
