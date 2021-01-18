@@ -5,7 +5,7 @@
  * description: Generate a messages-density histogram of your exported Telegram chat.
  *              └── why? I was curious, and Python was too slow(*) at parsing timestamps and so on.
  *
- *                    (*) 0.23 seconds vs 45 seconds benchmarked on the same ~45k messages dataset.
+ *                    (*) 0.23 seconds vs 30 seconds benchmarked on the same ~45k messages dataset.
  */
 
  
@@ -15,7 +15,6 @@ use std::io::prelude::*;
 // use std::fs::OpenOptions; // opening file
 
 use chrono::NaiveDateTime;
-// use chrono::{DateTime, NaiveDate, NaiveTime};
 use chrono::format::ParseError;
 
 use regex::Regex;
@@ -25,53 +24,28 @@ use plotlib::repr::{Histogram, HistogramBins};
 use plotlib::style::BoxStyle;
 use plotlib::view::ContinuousView;
 
-const NUM_BINS: usize = 200;
+use argparse::{ArgumentParser, StoreTrue, Store};
 
 
-fn main() {
-        
-    let REGEX_DATE_PATTERN = Regex::new(r"(\d{2}.\d{2}.\d{4} \d{2}:\d{2}:\d{2})").unwrap();
-    
-    let mut timestamps = vec![];
-
-    rename_file("messages.html", "messages1.html").unwrap();
-
-    let mut i = 1;
-    while let Ok(content) = read_file( format!("messages{}.html", i).as_str() ) {
-        println!("Processing {}", format!("messages{}.html", i));
-        i += 1;
-
-        for caps in REGEX_DATE_PATTERN.captures_iter(content.as_str()) {
-            
-            let epoch_date = tg_date_to_epoch_date(caps.get(1).unwrap().as_str());
-            match epoch_date {
-                Ok(n) => {
-                    // println!("{:?}, ", n);
-                    timestamps.push(n as f64);
-                },
-                Err(e) => println!("Error: {}", e),
-            }
-
-        }
-    }
-
-    generate_plot(&timestamps);
-
-    rename_file("messages1.html", "messages.html").unwrap();
-}
-
-fn generate_plot(data: &Vec<f64>) {
-    let h = Histogram::from_slice(&data, HistogramBins::Count(NUM_BINS))
+fn generate_plot(data: &Vec<f64>, num_bins: usize, verbose: bool) {
+    let h = Histogram::from_slice(&data, HistogramBins::Count(num_bins))
         .style(&BoxStyle::new().fill("burlywood"));
 
     let v = ContinuousView::new().add(h);
 
-    Page::single(&v).save("histogram.svg").expect("saving svg");
+    const FILE_NAME: &str = "histogram.svg";
+    Page::single(&v).save(FILE_NAME).expect("saving svg");
+
+    if verbose {
+        println!("Generated {} with {} bins in the current folder.", FILE_NAME, num_bins);
+    }
 }
 
-fn rename_file(original: &str, new_name: &str) -> std::io::Result<()> {
+fn rename_file(original: &str, new_name: &str, verbose: bool) -> std::io::Result<()> {
     fs::rename(original, new_name)?;
-    println!("Renaming {} to {}", original, new_name);
+    if verbose {
+        println!("Renamed {} to {}", original, new_name);
+    }
     Ok(())
 }
 
@@ -87,4 +61,51 @@ fn tg_date_to_epoch_date(tg_date: &str) -> Result<i64, ParseError> {
     let ts = NaiveDateTime::parse_from_str(tg_date, "%d.%m.%Y %H:%M:%S")?;
     Ok(ts.timestamp())
 }
+
+fn main() {
+
+    let mut verbose = false;
+    let mut num_bins = 200;
+    {  // this block limits scope of borrows by ap.refer() method
+        let mut ap = ArgumentParser::new();
+        ap.set_description("[telegrust-histo](https://github.com/urbanij/telegrust-histo)");
+        ap.refer(&mut verbose)
+            .add_option(&["-v", "--verbose"], 
+            StoreTrue,
+            "Be verbose");
+        ap.refer(&mut num_bins)
+            .add_option(&["-b"], 
+            Store,
+            "num_bins in your histogram");
+        ap.parse_args_or_exit();
+    }
+        
+    let regex_date_pattern = Regex::new(r"(\d{2}.\d{2}.\d{4} \d{2}:\d{2}:\d{2})").unwrap();
+                                    // matches timestamps of this kidn: 13.12.2018 19:17:39
+    
+    let mut timestamps = vec![];
+
+    rename_file("messages.html", "messages1.html", verbose).unwrap();
+
+    let mut i = 1;
+    while let Ok(content) = read_file( format!("messages{}.html", i).as_str() ) {
+        if verbose {
+            println!("Processing {}", format!("messages{}.html", i));
+        }
+
+        for caps in regex_date_pattern.captures_iter(content.as_str()) {
+            let epoch_date = tg_date_to_epoch_date(caps.get(1).unwrap().as_str());
+            match epoch_date {
+                Ok(n) => timestamps.push(n as f64),
+                Err(e) => println!("Error: {}", e),
+            }
+        }
+        i += 1;
+    }
+
+    generate_plot(&timestamps, num_bins, verbose);
+
+    rename_file("messages1.html", "messages.html", verbose).unwrap();
+}
+
 

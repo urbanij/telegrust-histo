@@ -10,11 +10,14 @@ cargo install telegrust-histo
 cd ~/Downloads/Telegram\ Desktop/ChatExport_2021-01-15 
 
 # run telegrust-histo 
-telegrust-histo 
+telegrust-histo -b 300 -v
+
+# see telegrust-histo options
+telegrust-histo -help
 ```
 
 
-![](https://raw.githubusercontent.com/urbanij/telegrust-histo/727c6d17f231f0542b9112ba2d6e5c43721d952d/histogram.svg?token=AELENNCBPCIJAM5T2WKAYCTAAS4NE)
+![](https://github.com/urbanij/telegrust-histo/blob/main/histogram.svg?raw=true)
 
 #### Demo:
 
