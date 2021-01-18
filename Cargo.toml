@@ -1,13 +1,22 @@
 [package]
 name = "telegrust-histo"
+license = "MIT"
 version = "0.1.0"
 authors = ["Francesco Urbani <francescourbanidue@gmail.com>"]
 edition = "2018"
+description = "Generate a message-density histogram from your exported Telegram chat"
+
+homepage = "https://github.com/urbanij/telegrust-histo/"
+documentation = "https://github.com/urbanij/telegrust-histo/"
+repository = "https://github.com/urbanij/telegrust-histo/"
+# readme = 
+keywords = "telegram"
+# categories = 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chrono = "0.4.19"
-plotlib = "0.5.1"
-regex = "1.4.3"
-argparse = "0.2.2"
+chrono    = "0.4.19"
+plotlib   = "0.5.1"
+regex     = "1.4.3"
+argparse  = "0.2.2"
