@@ -23,7 +23,8 @@ exclude = [
 [dependencies]
 chrono    = "0.4.19"
 plotlib   = "0.5.1"
+# plotters  = "0.3.0"
 regex     = "1.4.3"
 argparse  = "0.2.2"
 exitcode  = "1.1.2"
-termion   = "1.1.1"
+# termion   = "1.1.1"

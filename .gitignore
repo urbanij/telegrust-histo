@@ -1,4 +1,6 @@
 /target
 .DS_Store
+*.ipynb
+.ipynb*
 messages*.html
 Cargo.lock
