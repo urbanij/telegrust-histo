@@ -6,6 +6,8 @@
 
 use argparse::{ArgumentParser, StoreTrue, Store};
 
+mod message;
+
 mod utils;
 
 fn main() {
@@ -14,7 +16,7 @@ fn main() {
     let mut verbose = false;
     let mut num_bins = 200;
 
-    {  // this block limits scope of borrows by ap.refer() method
+    {   // this block limits scope of borrows by ap.refer() method
         let mut ap = ArgumentParser::new();
         ap.set_description("[telegrust-histo](https://github.com/urbanij/telegrust-histo)");
         ap.refer(&mut num_bins)
@@ -30,13 +32,13 @@ fn main() {
         
     
     
-    let mut timestamps = vec![];
+    let mut messages: Vec<message::Message> = vec![]; // unused as the name suggests, for now.
 
     // first file has no number in it, the following have an incremental suffix 
     // before the file extension, thus i iterate those in a loop.
 
     match utils::read_file("messages.html") {
-        Ok(content) => utils::process_content(content, &mut timestamps, None, verbose),
+        Ok(content) => utils::process_content(content, &mut messages, None, verbose),
         Err(e) => {
             println!("{:?}", e);
             println!("[-] `messages.html` not found!");
@@ -47,23 +49,22 @@ fn main() {
     
     let mut num_files = 2;
     while let Ok(content) = utils::read_file( format!("messages{}.html", num_files).as_str() ) {
-        utils::process_content(content, &mut timestamps, Some(num_files), verbose);
+        utils::process_content(content, &mut messages, Some(num_files), verbose);
         num_files += 1;
     }
 
-    // println!("{:?}", timestamps);
-    if timestamps.len() <= 0 {
-        eprintln!("[-] Some errors with your files... Quitting.");
+    if messages.len() <= 0 {
+        eprintln!("[-] Some errors with your file(s)... Quitting.");
         std::process::exit(exitcode::DATAERR);
     }
 
-    utils::generate_plot(&timestamps, num_bins);
+    utils::generate_plot(&messages, num_bins);
     
     println!("[+] Processed {} files ({} messages) from {} to {}", 
         num_files - 1,
-        timestamps.len(),
-        utils::epoch_to_readable_date(timestamps[0]),
-        utils::epoch_to_readable_date(timestamps[timestamps.len()-1]),
+        messages.len(),
+        messages[0].get_timestamp_string(),
+        messages[messages.len()-1].get_timestamp_string(),
     );
 
 }

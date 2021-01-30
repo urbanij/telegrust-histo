@@ -1,13 +1,13 @@
 [package]
 name = "telegrust-histo"
 license = "MIT"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Francesco Urbani <francescourbanidue@gmail.com>"]
 edition = "2018"
 description = "Generate a message-density histogram from your exported Telegram chat"
 
-homepage = "https://github.com/urbanij/telegrust-histo/"
-documentation = "https://github.com/urbanij/telegrust-histo/"
+# homepage = "https://github.com/urbanij/telegrust-histo/"
+# documentation = "https://github.com/urbanij/telegrust-histo/"
 repository = "https://github.com/urbanij/telegrust-histo/"
 # readme = 
 keywords = ["telegram", "telegram-export", "telegram-histogram"]

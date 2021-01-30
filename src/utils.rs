@@ -13,14 +13,16 @@ use plotlib::repr::{Histogram, HistogramBins};
 use plotlib::style::BoxStyle;
 use plotlib::view::ContinuousView;
 
-use chrono::prelude::DateTime;
-use chrono::Utc;
-use std::time::{SystemTime, UNIX_EPOCH, Duration};
+
+use crate::message::Message;
+mod message;
 
 
+pub fn generate_plot(messages: &Vec<Message>, num_bins: usize) {
+    
+    // accumulate timestamps into `data`.
+    let data = messages.iter().map(|i| i.timestamp).collect::<Vec<f64>>();
 
-pub fn generate_plot(data: &Vec<f64>, num_bins: usize) 
-{
     let h = Histogram::from_slice(
                             &data, 
                             HistogramBins::Count(num_bins))
@@ -64,21 +66,11 @@ pub fn tg_date_to_epoch_date(tg_date: &str) -> Result<i64, ParseError> {
     Ok(ts.timestamp())
 }
 
-pub fn epoch_to_readable_date(epoch_date: f64) -> String {
-    // Creates a new SystemTime from the specified number of whole seconds
-    let d = UNIX_EPOCH + Duration::from_secs(epoch_date as u64);
-    // Create DateTime from SystemTime
-    let datetime = DateTime::<Utc>::from(d);
-    // Formats the combined date and time with the specified format string.
-    let timestamp_str = datetime.format("%Y-%m-%d %H:%M").to_string();
-
-    timestamp_str
-}
-
-pub fn process_content(content: String, timestamps: &mut Vec<f64>, file_num: Option<i32>, verbose: bool) {
+pub fn process_content(content: String, messages: &mut Vec<Message>, file_num: Option<i32>, verbose: bool) {
     
-    let regex_date_pattern = Regex::new(r"(\d{2}.\d{2}.\d{4} \d{2}:\d{2}:\d{2})").unwrap();
-                                    // matches timestamps of this kind: 13.12.2018 19:17:39
+    // matches messages of this kind: 13.12.2018 19:17:39
+    let regex_date_pattern = Regex::new(r"(\d{2}.\d{2}.\d{4} \d{2}:\d{2}:\d{2})")
+                                            .unwrap(); // unwrap is risky but this should never fail.
     
     if verbose {
         match file_num {
@@ -90,7 +82,7 @@ pub fn process_content(content: String, timestamps: &mut Vec<f64>, file_num: Opt
     for caps in regex_date_pattern.captures_iter(content.as_str()) {
         let epoch_date = tg_date_to_epoch_date(caps.get(1).unwrap().as_str());
         match epoch_date {
-            Ok(n) => timestamps.push(n as f64),
+            Ok(n) => messages.push(Message::new(n as f64)),
             Err(e) => println!("Error: {}", e),
         }
     }
