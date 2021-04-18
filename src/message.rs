@@ -1,6 +1,5 @@
 use chrono::prelude::DateTime;
 use chrono::Utc;
-use std::time::{SystemTime, UNIX_EPOCH, Duration};
 
 // #[derive(Debug)]
 pub struct Message {
@@ -20,7 +19,7 @@ impl Message {
     
     fn convert_epoch_to_readable_date(&self) -> String {
         // Creates a new SystemTime from the specified number of whole seconds
-        let d = UNIX_EPOCH + Duration::from_secs(self.timestamp as u64);
+        let d = std::time::UNIX_EPOCH + std::time::Duration::from_secs(self.timestamp as u64);
         // Create DateTime from SystemTime
         let datetime = DateTime::<Utc>::from(d);
         // Formats the combined date and time with the specified format string.

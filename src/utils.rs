@@ -1,8 +1,5 @@
-// use std::fs; // renaming
-use std::fs::File;
 use std::io::prelude::*;
 // use std::fs::OpenOptions; // opening file
-
 use chrono::NaiveDateTime;
 use chrono::format::ParseError;
 
@@ -13,10 +10,7 @@ use plotlib::repr::{Histogram, HistogramBins};
 use plotlib::style::BoxStyle;
 use plotlib::view::ContinuousView;
 
-
 use crate::message::Message;
-mod message;
-
 
 pub fn generate_plot(messages: &Vec<Message>, num_bins: usize) {
     
@@ -55,7 +49,7 @@ pub fn generate_plot(messages: &Vec<Message>, num_bins: usize) {
 // }
 
 pub fn read_file(filename: &str) -> std::io::Result<String> {
-    let mut file = File::open(filename)?;
+    let mut file = std::fs::File::open(filename)?;
     let mut content = String::new();
     file.read_to_string(&mut content)?;
     Ok(content)
@@ -66,7 +60,12 @@ pub fn tg_date_to_epoch_date(tg_date: &str) -> Result<i64, ParseError> {
     Ok(ts.timestamp())
 }
 
-pub fn process_content(content: String, messages: &mut Vec<Message>, file_num: Option<i32>, verbose: bool) {
+pub fn process_content(
+    content: String,
+    messages: &mut Vec<Message>, 
+    file_num: Option<i32>, 
+    verbose: bool) 
+{
     
     // matches messages of this kind: 13.12.2018 19:17:39
     let regex_date_pattern = Regex::new(r"(\d{2}.\d{2}.\d{4} \d{2}:\d{2}:\d{2})")
@@ -79,10 +78,18 @@ pub fn process_content(content: String, messages: &mut Vec<Message>, file_num: O
         };
     }
 
+
+    // TODO: get todays epoch date anc compare it with the date found in the text message: based on that add it or not.
+    
     for caps in regex_date_pattern.captures_iter(content.as_str()) {
         let epoch_date = tg_date_to_epoch_date(caps.get(1).unwrap().as_str());
         match epoch_date {
-            Ok(n) => messages.push(Message::new(n as f64)),
+            Ok(n) => {
+                if n != 0 {
+
+                }
+                messages.push(Message::new(n as f64))
+            },
             Err(e) => println!("Error: {}", e),
         }
     }

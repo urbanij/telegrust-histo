@@ -7,7 +7,6 @@
 use argparse::{ArgumentParser, StoreTrue, Store};
 
 mod message;
-
 mod utils;
 
 fn main() {
@@ -15,18 +14,23 @@ fn main() {
     // default values of argparsed arguments
     let mut verbose = false;
     let mut num_bins = 200;
+    let mut timespan = 0;
 
     {   // this block limits scope of borrows by ap.refer() method
         let mut ap = ArgumentParser::new();
-        ap.set_description("[telegrust-histo](https://github.com/urbanij/telegrust-histo)");
+        ap.set_description("https://github.com/urbanij/telegrust-histo");
         ap.refer(&mut num_bins)
             .add_option(&["-b"], 
                         Store,
-                        "num_bins in your histogram");
+                        "num_bins in your histogram [default 200]");
+        ap.refer(&mut timespan)
+            .add_option(&["-t"], 
+                        Store,
+                        "messages timespan [default all]");
         ap.refer(&mut verbose)
             .add_option(&["-v", "--verbose"], 
                         StoreTrue,
-                        "Be verbose");
+                        "be verbose");
         ap.parse_args_or_exit();
     }
         
