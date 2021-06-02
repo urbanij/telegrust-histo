@@ -7,9 +7,9 @@ pub struct Message {
 }
 
 impl Message {
-    pub fn new(ts: f64) -> Self {
+    pub fn new(timestamp: f64) -> Self {
         Self {
-            timestamp: ts,
+            timestamp,
         }
     }
 

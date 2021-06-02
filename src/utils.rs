@@ -12,7 +12,7 @@ use plotlib::view::ContinuousView;
 
 use crate::message::Message;
 
-pub fn generate_plot(messages: &Vec<Message>, num_bins: usize) {
+pub fn generate_plot(messages: &[Message], num_bins: usize) {
     
     // accumulate timestamps into `data`.
     let data = messages.iter().map(|i| i.timestamp).collect::<Vec<f64>>();

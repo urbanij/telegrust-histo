@@ -57,7 +57,7 @@ fn main() {
         num_files += 1;
     }
 
-    if messages.len() <= 0 {
+    if messages.is_empty() {
         eprintln!("[-] Some errors with your file(s)... Quitting.");
         std::process::exit(exitcode::DATAERR);
     }
