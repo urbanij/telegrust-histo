@@ -42,7 +42,7 @@ fn main() {
     // before the file extension, thus i iterate those in a loop.
 
     match utils::read_file("messages.html") {
-        Ok(content) => utils::process_content(content, &mut messages, None, verbose),
+        Ok(content) => utils::process_content(content.as_str(), &mut messages, None, verbose),
         Err(e) => {
             println!("{:?}", e);
             println!("[-] `messages.html` not found!");
@@ -53,7 +53,7 @@ fn main() {
     
     let mut num_files = 2;
     while let Ok(content) = utils::read_file( format!("messages{}.html", num_files).as_str() ) {
-        utils::process_content(content, &mut messages, Some(num_files), verbose);
+        utils::process_content(content.as_str(), &mut messages, Some(num_files), verbose);
         num_files += 1;
     }
 

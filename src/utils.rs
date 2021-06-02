@@ -61,7 +61,7 @@ pub fn tg_date_to_epoch_date(tg_date: &str) -> Result<i64, ParseError> {
 }
 
 pub fn process_content(
-    content: String,
+    content: &str,
     messages: &mut Vec<Message>, 
     file_num: Option<i32>, 
     verbose: bool) 
@@ -81,7 +81,7 @@ pub fn process_content(
 
     // TODO: get todays epoch date anc compare it with the date found in the text message: based on that add it or not.
     
-    for caps in regex_date_pattern.captures_iter(content.as_str()) {
+    for caps in regex_date_pattern.captures_iter(content) {
         let epoch_date = tg_date_to_epoch_date(caps.get(1).unwrap().as_str());
         match epoch_date {
             Ok(n) => {

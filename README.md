@@ -8,8 +8,6 @@ Why? I was curious and [Python proved too slow](https://github.com/urbanij/teleg
 
 ### Install:
 ```bash
-# install telegrust-histo with cargo, 
-# provided that you have the rust toolchain set up.
 cargo install telegrust-histo
 ```
 
